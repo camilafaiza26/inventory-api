@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Properties>
+		<Property name="log-path">log</Property>
+	</Properties>
+	<Appenders>
+
+		<!-- console appender -->
+		<Console name="console-log" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %c{1} - %msg%n" />
+		</Console>
+
+		<!-- file appender -->
+		<RollingFile name="access-log" fileName="${log-path}/access.log"
+			filePattern="${log-path}/access-%d{yyyy-MM-dd}.log">
+			<!-- log pattern -->
+			<PatternLayout>
+				<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %c{1} - %msg%n</pattern>
+			</PatternLayout>
+
+			<!-- set file size policy -->
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="access-third-log" fileName="${log-path}/access-third.log"
+			filePattern="${log-path}/access-third-%d{yyyy-MM-dd}.log">
+			<!-- log pattern -->
+			<PatternLayout>
+				<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %c{1} - %msg%n</pattern>
+			</PatternLayout>
+
+			<!-- set file size policy -->
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="com.example.inventory" level="debug"
+			additivity="false">
+			<appender-ref ref="console-log" level="debug" />
+		</Logger>
+		<Logger name="access-log" level="debug" additivity="false">
+			<appender-ref ref="access-log" level="debug" />
+		</Logger>
+		<Logger name="access-third-log" level="debug" additivity="false">
+			<appender-ref ref="access-third-log" level="debug" />
+		</Logger>
+	</Loggers>
+</Configuration>
