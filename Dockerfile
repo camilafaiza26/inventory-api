@@ -6,10 +6,12 @@ WORKDIR /app
 
 # Copy M2 folder
 #COPY .m2 /root/.m2
-RUN mvn compile && mvn package && mvn install
+
 
 # Copy the application source code to the container
 COPY . .
+
+RUN mvn compile && mvn package && mvn install
 
 # Download the dependencies offline to speed up the build process
 RUN mvn dependency:go-offline && mvn clean package -DskipTests=true
