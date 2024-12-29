@@ -1,5 +1,5 @@
 # Stage 1: Build the application using Maven
-FROM maven:3.9-eclipse-temurin-23-alpine AS builder
+FROM maven:3.9-eclipse-temurin-17-alpine AS builder
 
 # Set the working directory
 WORKDIR /app
@@ -13,8 +13,8 @@ COPY . .
 # Download the dependencies offline to speed up the build process
 RUN mvn dependency:go-offline && mvn clean package -DskipTests=true
 
-# Stage 2: Run the application with Java 23
-FROM eclipse-temurin:23-jdk-alpine AS runner
+# Stage 2: Run the application with Java 17
+FROM eclipse-temurin:17-jdk-alpine AS runner
 
 RUN mkdir /app
 # Create the /app/logs directory for logs
@@ -27,7 +27,5 @@ WORKDIR /app
 # Expose port 5000 for the application
 EXPOSE 5000
 
-# Set the entry point to run the .jar file using Java 23
+# Set the entry point to run the .jar file using Java 17
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
-
