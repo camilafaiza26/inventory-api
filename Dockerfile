@@ -5,7 +5,8 @@ FROM maven:3.9-eclipse-temurin-17-alpine AS builder
 WORKDIR /app
 
 # Copy M2 folder
-COPY .m2 /root/.m2
+#COPY .m2 /root/.m2
+RUN mvm compile && mvn package && mvn install
 
 # Copy the application source code to the container
 COPY . .
