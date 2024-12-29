@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy M2 folder
 #COPY .m2 /root/.m2
-RUN mvm compile && mvn package && mvn install
+RUN mvn compile && mvn package && mvn install
 
 # Copy the application source code to the container
 COPY . .
