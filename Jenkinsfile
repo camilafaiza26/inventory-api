@@ -6,9 +6,7 @@ pipeline {
     agent any
     stages {
        stage('Checkout') {
-          dir('project') {
-              git url: "${git_repo}", branch: "${git_branch}", credentialsId: "${git_credentials_id}"
-          }
+          git url: "${git_repo}", branch: "${git_branch}", credentialsId: "${git_credentials_id}"
           sh 'ls -l'
        }
         stage('Read POM') {
