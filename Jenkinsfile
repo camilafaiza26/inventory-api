@@ -7,7 +7,7 @@ pipeline {
                     echo "Building branch: ${params.BRANCH_NAME}"
                     echo "Build environment: ${params.BUILD_ENV}"
                     echo "Run tests: ${params.ENABLE_TESTS}"
-
+                    sh 'git status'
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: "*/${params.BRANCH_NAME}"]],
