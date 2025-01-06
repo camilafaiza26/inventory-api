@@ -13,7 +13,7 @@ pipeline {
                         branches: [[name: "*/${params.BRANCH_NAME}"]],
                         userRemoteConfigs: [[
                             url: 'https://github.com/camilafaiza26/inventory-api',
-                            credentialsId: '44cca29c-b0ba-450e-8b95-c6eccc0814a5'
+                            credentialsId: '3745848d-39df-4e94-bc3d-dfa95bd9ab5d'
                         ]]
                     ])
                 }
