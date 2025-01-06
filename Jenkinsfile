@@ -5,10 +5,23 @@ def git_branch = scm.branches[0].name
 pipeline {
     agent any
     stages {
-       stage('Checkout') {
-          git url: "${git_repo}", branch: "${git_branch}", credentialsId: "${git_credentials_id}"
-          sh 'ls -l'
-       }
+        stage('Checkout') {
+            steps {
+                script {
+                    echo "Checking out code from ${git_repo} branch ${git_branch} using credentials ${git_credentials_id}"
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "${git_branch}"]],
+                        userRemoteConfigs: [[
+                            url: "${git_repo}",
+                            credentialsId: "${git_credentials_id}"
+                        ]]
+                    ])
+                    sh 'ls -l'
+                }
+            }
+        }
+
         stage('Read POM') {
             steps {
                 script {
