@@ -22,30 +22,13 @@ pipeline {
         stage('Read POM') {
             steps {
                 script {
-                    try {
-                        echo "Reading POM file..."
+                    echo "Reading POM file..."
+                    def pom = readMavenPom file: 'pom.xml'
 
-                        def pomFile = 'pom.xml'
-                        if (!fileExists(pomFile)) {
-                            error "POM file not found at: ${pomFile}"
-                        }
-
-                        // Parsing XML
-                        def pomXml = new XmlParser().parse(pomFile)
-
-                        // Ambil nilai dari tag dengan namespace Maven
-                        def ns = [mvn: 'http://maven.apache.org/POM/4.0.0']
-                        def projectName = pomXml['mvn:name']?.text()
-                        def artifactId = pomXml['mvn:artifactId']?.text()
-                        def version = pomXml['mvn:version']?.text()
-
-                        // Cetak hasil
-                        echo "Project Name: ${projectName ?: 'Unknown'}"
-                        echo "Artifact ID: ${artifactId ?: 'Unknown'}"
-                        echo "Version: ${version ?: 'Unknown'}"
-                    } catch (Exception e) {
-                        error "Failed to read POM file: ${e.message}"
-                    }
+                    // Extract and print project details
+                    echo "Project Name: ${pom.name ?: 'Unknown'}"
+                    echo "Artifact ID: ${pom.artifactId ?: 'Unknown'}"
+                    echo "Version: ${pom.version ?: 'Unknown'}"
                 }
             }
         }
