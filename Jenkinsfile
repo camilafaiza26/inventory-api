@@ -22,11 +22,13 @@ pipeline {
         }
         stage('Build') {
             steps {
-                echo "Running build for ${params.BUILD_ENV} environment..."
-                if (params.ENABLE_TESTS) {
-                    echo "Running tests..."
-                } else {
-                    echo "Skipping tests..."
+                script {
+                    echo "Running build for ${params.BUILD_ENV} environment..."
+                    if (params.ENABLE_TESTS) {
+                        echo "Running tests..."
+                    } else {
+                        echo "Skipping tests..."
+                    }
                 }
             }
         }
