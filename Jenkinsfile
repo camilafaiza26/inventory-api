@@ -1,3 +1,7 @@
+def git_credentials_id = scm.userRemoteConfigs[0].credentialsId
+def git_repo = scm.userRemoteConfigs[0].url
+def git_branch = scm.branches[0].name
+
 pipeline {
     agent any
     stages {
@@ -8,14 +12,9 @@ pipeline {
                     echo "Build environment: ${params.BUILD_ENV}"
                     echo "Run tests: ${params.ENABLE_TESTS}"
                     sh 'git status'
-                    checkout([
-                        $class: 'GitSCM',
-                        branches: [[name: "*/${params.BRANCH_NAME}"]],
-                        userRemoteConfigs: [[
-                            url: 'https://github.com/camilafaiza26/inventory-api',
-                            credentialsId: '3745848d-39df-4e94-bc3d-dfa95bd9ab5d'
-                        ]]
-                    ])
+                     withCredentials([string(credentialsId: '3745848d-39df-4e94-bc3d-dfa95bd9ab5d', variable: 'GITHUB_TOKEN')]) {
+                      sh 'git clone https://$GITHUB_TOKEN@github.com/camilafaiza26/inventory-api.git'
+                     }
                 }
             }
         }
