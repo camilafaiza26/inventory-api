@@ -11,7 +11,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>inventory</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>inventory</name>
+	<name>inventory-sit</name>
 	<description>Inventory API</description>
 	<url/>
 	<licenses>
