@@ -5,20 +5,12 @@ def git_branch = scm.branches[0].name
 pipeline {
     agent any
     stages {
-        stage('Checkout') {
-            steps {
-                script {
-                    echo "Building branch: ${params.BRANCH_NAME}"
-                    echo "Build environment: ${params.BUILD_ENV}"
-                    echo "Run tests: ${params.ENABLE_TESTS}"
-                    sh 'git status'
-                     withCredentials([string(credentialsId: '3745848d-39df-4e94-bc3d-dfa95bd9ab5d', variable: 'GITHUB_TOKEN')]) {
-                      sh 'git clone https://$GITHUB_TOKEN@github.com/camilafaiza26/inventory-api.git'
-                     }
-                }
-            }
-        }
-
+       stage('Checkout') {
+          dir('project') {
+              git url: "${git_repo}", branch: "${git_branch}", credentialsId: "${git_credentials_id}"
+          }
+          sh 'ls -l'
+       }
         stage('Read POM') {
             steps {
                 script {
