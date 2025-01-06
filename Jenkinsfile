@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent any  // Menentukan bahwa pipeline ini akan dijalankan di agen mana saja yang tersedia
     stages {
         stage('Checkout') {
             steps {
