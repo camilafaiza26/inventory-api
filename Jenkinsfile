@@ -1,5 +1,5 @@
 pipeline {
-    agent any  // Menentukan bahwa pipeline ini akan dijalankan di agen mana saja yang tersedia
+    agent any
     stages {
         stage('Checkout') {
             steps {
@@ -13,7 +13,7 @@ pipeline {
                         branches: [[name: "*/${params.BRANCH_NAME}"]],
                         userRemoteConfigs: [[
                             url: 'https://github.com/camilafaiza26/inventory-api',
-                            credentialsId: '18c0ab3a-5347-4dfc-bdb5-27c689d83390'
+                            credentialsId: '44cca29c-b0ba-450e-8b95-c6eccc0814a5'
                         ]]
                     ])
                 }
@@ -26,7 +26,6 @@ pipeline {
                     try {
                         echo "Reading POM file..."
 
-                        // Validasi file
                         def pomFile = 'pom.xml'
                         if (!fileExists(pomFile)) {
                             error "POM file not found at: ${pomFile}"
@@ -58,13 +57,13 @@ pipeline {
                     echo "Running build for ${params.BUILD_ENV} environment..."
 
                     switch (params.BRANCH_NAME) {
-                        case 'SIT':
+                        case 'sit':
                             echo "Branch is SIT, using environment SIT"
                             break
-                        case 'UAT':
+                        case 'uat':
                             echo "Branch is UAT, using environment UAT"
                             break
-                        case 'STAGING':
+                        case 'staging':
                             echo "Branch is STAGING, using environment STAGING"
                             break
                         default:
