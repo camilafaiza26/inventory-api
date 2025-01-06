@@ -1,4 +1,5 @@
 pipeline {
+    agent any
     stages {
         stage('Checkout') {
             steps {
@@ -59,25 +60,20 @@ pipeline {
                     switch (params.BRANCH_NAME) {
                         case 'SIT':
                             echo "Branch is SIT, using environment SIT"
-                            // Tambahkan logika khusus SIT di sini
                             break
                         case 'UAT':
                             echo "Branch is UAT, using environment UAT"
-                            // Tambahkan logika khusus UAT di sini
                             break
                         case 'STAGING':
                             echo "Branch is STAGING, using environment STAGING"
-                            // Tambahkan logika khusus STAGING di sini
                             break
                         default:
                             echo "Branch is not SIT, UAT, or STAGING. Defaulting to ${params.BRANCH_NAME}"
-                            // Tambahkan fallback logika jika diperlukan
                             break
                     }
 
                     if (params.ENABLE_TESTS) {
                         echo "Running tests..."
-                        // Tambahkan langkah eksekusi tes di sini
                     } else {
                         echo "Skipping tests..."
                     }
