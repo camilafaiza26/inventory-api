@@ -1,8 +1,8 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build')
-        choice(name: 'BUILD_ENV', choices: ['SIT', 'PROD', 'PROD'], description: 'Environment for the build')
+        string(name: 'BRANCH_NAME', defaultValue: 'master', description: 'Branch to build')
+        choice(name: 'BUILD_ENV', choices: ['SIT', 'UAT', 'PROD'], description: 'Environment for the build')
         booleanParam(name: 'ENABLE_TESTS', defaultValue: true, description: 'Run tests during the build')
     }
     stages {
