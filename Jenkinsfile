@@ -16,7 +16,10 @@ pipeline {
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: "*/${params.BRANCH_NAME}"]],
-                    userRemoteConfigs: [[url: 'https://github.com/example/repo.git']]
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/camilafaiza26/inventory-api',
+                        credentialsId: '18c0ab3a-5347-4dfc-bdb5-27c689d83390'
+                    ]]
                 ])
             }
         }
