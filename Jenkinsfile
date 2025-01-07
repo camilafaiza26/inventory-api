@@ -1,37 +1,19 @@
-def git_credentials_id = scm.userRemoteConfigs[0].credentialsId
-def git_repo = scm.userRemoteConfigs[0].url
-def git_branch = scm.branches[0].name
-
 pipeline {
     agent any
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    echo "Checking out code from ${git_repo} branch ${git_branch} using credentials ${git_credentials_id}"
+                    echo "Checking out code from ${params.REPO_URL}, branch ${params.BRANCH_NAME} using credentials ${params.CREDENTIALS_ID}"
                     checkout([
                         $class: 'GitSCM',
-                        branches: [[name: "${git_branch}"]],
+                        branches: [[name: "*/${params.BRANCH_NAME}"]],
                         userRemoteConfigs: [[
-                            url: "${git_repo}",
-                            credentialsId: "${git_credentials_id}"
+                            url: scm.userRemoteConfigs[0].url,
+                            credentialsId: scm.userRemoteConfigs[0].credentialsId
                         ]]
                     ])
                     sh 'ls -l'
-                }
-            }
-        }
-
-        stage('Read POM') {
-            steps {
-                script {
-                    echo "Reading POM file..."
-                    def pom = readMavenPom file: 'pom.xml'
-
-                    // Extract and print project details
-                    echo "Project Name: ${pom.name ?: 'Unknown'}"
-                    echo "Artifact ID: ${pom.artifactId ?: 'Unknown'}"
-                    echo "Version: ${pom.version ?: 'Unknown'}"
                 }
             }
         }
@@ -41,7 +23,7 @@ pipeline {
                 script {
                     echo "Running build for ${params.BUILD_ENV} environment..."
 
-                    switch (params.BRANCH_NAME) {
+                    switch (params.BRANCH_NAME.toLowerCase()) {
                         case 'sit':
                             echo "Branch is SIT, using environment SIT"
                             break
@@ -52,17 +34,12 @@ pipeline {
                             echo "Branch is STAGING, using environment STAGING"
                             break
                         default:
-                            echo "Branch is not SIT, UAT, or STAGING. Defaulting to ${params.BRANCH_NAME}"
+                            echo "Branch is not SIT, UAT, or STAGING. Defaulting to ${params.BUILD_ENV}"
                             break
                     }
 
                     if (params.ENABLE_TESTS) {
                         echo "Running tests..."
+                        sh './mvnw test' // Example test command; adjust as needed
                     } else {
-                        echo "Skipping tests..."
-                    }
-                }
-            }
-        }
-    }
-}
+
