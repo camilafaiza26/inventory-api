@@ -91,4 +91,7 @@ def getFromPom(String key) {
     def pom = readMavenPom file: 'pom.xml'
     if (pom."${key}") {
         return pom."${key}"
-    } el
+    } else {
+        error "Key '${key}' not found in POM file"
+    }
+}
