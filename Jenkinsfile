@@ -1,18 +1,5 @@
 pipeline {
-    agent { label 'master' }
-
-    parameters {
-        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to checkout')
-        string(name: 'BUILD_ENV', defaultValue: 'dev', description: 'Build environment (e.g., dev, sit, uat, prod)')
-        booleanParam(name: 'ENABLE_TESTS', defaultValue: true, description: 'Run tests after build?')
-    }
-
-    environment {
-        JAVA_HOME = "/opt/java/openjdk"
-        M2_HOME = "/usr/share/maven"
-        PATH = "${env.JAVA_HOME}/bin:${env.M2_HOME}/bin:${env.PATH}"
-    }
-
+    agent any
     stages {
         stage('Checkout') {
             steps {
