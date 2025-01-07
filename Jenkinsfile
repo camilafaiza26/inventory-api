@@ -4,50 +4,16 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    echo "Building branch: ${params.BRANCH_NAME}"
-                    echo "Build environment: ${params.BUILD_ENV}"
-                    echo "Run tests: ${params.ENABLE_TESTS}"
-
+                    echo "Checking out code from ${scm.userRemoteConfigs[0].url}, branch ${params.BRANCH_NAME} using credentials ${scm.userRemoteConfigs[0].credentialsId}"
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: "*/${params.BRANCH_NAME}"]],
                         userRemoteConfigs: [[
-                            url: 'https://github.com/camilafaiza26/inventory-api',
-                            credentialsId: '18c0ab3a-5347-4dfc-bdb5-27c689d83390'
+                            url: scm.userRemoteConfigs[0].url,
+                            credentialsId: scm.userRemoteConfigs[0].credentialsId
                         ]]
                     ])
-                }
-            }
-        }
-
-        stage('Read POM') {
-            steps {
-                script {
-                    try {
-                        echo "Reading POM file..."
-
-                        // Validasi file
-                        def pomFile = 'pom.xml'
-                        if (!fileExists(pomFile)) {
-                            error "POM file not found at: ${pomFile}"
-                        }
-
-                        // Parsing XML
-                        def pomXml = new XmlParser().parse(pomFile)
-
-                        // Ambil nilai dari tag dengan namespace Maven
-                        def ns = [mvn: 'http://maven.apache.org/POM/4.0.0']
-                        def projectName = pomXml['mvn:name']?.text()
-                        def artifactId = pomXml['mvn:artifactId']?.text()
-                        def version = pomXml['mvn:version']?.text()
-
-                        // Cetak hasil
-                        echo "Project Name: ${projectName ?: 'Unknown'}"
-                        echo "Artifact ID: ${artifactId ?: 'Unknown'}"
-                        echo "Version: ${version ?: 'Unknown'}"
-                    } catch (Exception e) {
-                        error "Failed to read POM file: ${e.message}"
-                    }
+                    sh 'ls -l'
                 }
             }
         }
@@ -57,25 +23,26 @@ pipeline {
                 script {
                     echo "Running build for ${params.BUILD_ENV} environment..."
 
-                    switch (params.BRANCH_NAME) {
-                        case 'SIT':
+                    switch (params.BRANCH_NAME.toLowerCase()) {
+                        case 'sit':
                             echo "Branch is SIT, using environment SIT"
                             break
-                        case 'UAT':
+                        case 'uat':
                             echo "Branch is UAT, using environment UAT"
                             break
-                        case 'STAGING':
+                        case 'staging':
                             echo "Branch is STAGING, using environment STAGING"
                             break
                         default:
-                            echo "Branch is not SIT, UAT, or STAGING. Defaulting to ${params.BRANCH_NAME}"
+                            echo "Branch is not SIT, UAT, or STAGING. Defaulting to ${params.BUILD_ENV}"
                             break
                     }
 
                     if (params.ENABLE_TESTS) {
                         echo "Running tests..."
+                        sh './mvnw test' // Adjust as needed for your test command
                     } else {
-                        echo "Skipping tests..."
+                        echo "Skipping tests as ENABLE_TESTS is set to false"
                     }
                 }
             }
