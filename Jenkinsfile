@@ -1,23 +1,45 @@
+def appName = 'inventory-api'
+def contextPath = '/inventory-api'
+
+def git_credentials_id = scm.userRemoteConfigs[0].credentialsId
+def git_repo = scm.userRemoteConfigs[0].url
+
 pipeline {
-    agent any
+    agent { label 'master' }
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    echo "Checking out code from ${scm.userRemoteConfigs[0].url}, branch ${params.BRANCH_NAME} using credentials ${scm.userRemoteConfigs[0].credentialsId}"
+                    echo "Checking out code from ${git_repo}, branch ${params.BRANCH_NAME} using credentials ${git_credentials_id}"
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: "*/${params.BRANCH_NAME}"]],
                         userRemoteConfigs: [[
-                            url: scm.userRemoteConfigs[0].url,
-                            credentialsId: scm.userRemoteConfigs[0].credentialsId
+                            url: ${git_repo}
+                            credentialsId: ${git_credentials_id}
                         ]]
                     ])
                     sh 'ls -l'
                 }
             }
         }
+         stage('Environment') {
+                env.JAVA_HOME="/opt/java/openjdk"
+                env.M2_HOME="/usr/share/maven"
+                env.PATH="${env.JAVA_HOME}/bin:${env.PATH}"
 
+                sh """
+                    java -version
+                    mvn -version
+                    echo project ${ocp_project}, route ${public_route_prefix}, base domain ${ocp_base_domain}
+                """
+         }
+         stage('Prepare'){
+                 appVersion = getFromPom('version')
+                 sh """
+                     echo app version ${appVersion}
+                 """
+        }
         stage('Build') {
             steps {
                 script {
@@ -40,7 +62,7 @@ pipeline {
 
                     if (params.ENABLE_TESTS) {
                         echo "Running tests..."
-                        sh './mvnw test' // Adjust as needed for your test command
+                        sh './mvnw test'
                     } else {
                         echo "Skipping tests as ENABLE_TESTS is set to false"
                     }
