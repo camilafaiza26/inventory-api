@@ -1,45 +1,60 @@
-def appName = 'inventory-api'
-def contextPath = '/inventory-api'
-
-def git_credentials_id = scm.userRemoteConfigs[0].credentialsId
-def git_repo = scm.userRemoteConfigs[0].url
-
 pipeline {
     agent { label 'master' }
+
+    parameters {
+        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to checkout')
+        string(name: 'BUILD_ENV', defaultValue: 'dev', description: 'Build environment (e.g., dev, sit, uat, prod)')
+        booleanParam(name: 'ENABLE_TESTS', defaultValue: true, description: 'Run tests after build?')
+    }
+
+    environment {
+        JAVA_HOME = "/opt/java/openjdk"
+        M2_HOME = "/usr/share/maven"
+        PATH = "${env.JAVA_HOME}/bin:${env.M2_HOME}/bin:${env.PATH}"
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 script {
+                    def git_repo = scm.userRemoteConfigs[0].url
+                    def git_credentials_id = scm.userRemoteConfigs[0].credentialsId
+
                     echo "Checking out code from ${git_repo}, branch ${params.BRANCH_NAME} using credentials ${git_credentials_id}"
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: "*/${params.BRANCH_NAME}"]],
                         userRemoteConfigs: [[
-                            url: ${git_repo},
-                            credentialsId: ${git_credentials_id}
+                            url: git_repo,
+                            credentialsId: git_credentials_id
                         ]]
                     ])
                     sh 'ls -l'
                 }
             }
         }
-         stage('Environment') {
-                env.JAVA_HOME="/opt/java/openjdk"
-                env.M2_HOME="/usr/share/maven"
-                env.PATH="${env.JAVA_HOME}/bin:${env.PATH}"
 
-                sh """
-                    java -version
-                    mvn -version
-                    echo project ${ocp_project}, route ${public_route_prefix}, base domain ${ocp_base_domain}
-                """
-         }
-         stage('Prepare'){
-                 appVersion = getFromPom('version')
-                 sh """
-                     echo app version ${appVersion}
-                 """
+        stage('Environment') {
+            steps {
+                script {
+                    sh """
+                        echo 'Java and Maven Environment Details:'
+                        java -version
+                        mvn -version
+                    """
+                }
+            }
         }
+
+        stage('Prepare') {
+            steps {
+                script {
+                    def appVersion = getFromPom('version')
+                    echo "App Version: ${appVersion}"
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 script {
@@ -71,3 +86,9 @@ pipeline {
         }
     }
 }
+
+def getFromPom(String key) {
+    def pom = readMavenPom file: 'pom.xml'
+    if (pom."${key}") {
+        return pom."${key}"
+    } el
