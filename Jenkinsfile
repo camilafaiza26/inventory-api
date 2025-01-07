@@ -4,7 +4,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    echo "Checking out code from ${params.REPO_URL}, branch ${params.BRANCH_NAME} using credentials ${params.CREDENTIALS_ID}"
+                    echo "Checking out code from ${scm.userRemoteConfigs[0].url}, branch ${params.BRANCH_NAME} using credentials ${scm.userRemoteConfigs[0].credentialsId}"
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: "*/${params.BRANCH_NAME}"]],
@@ -40,6 +40,12 @@ pipeline {
 
                     if (params.ENABLE_TESTS) {
                         echo "Running tests..."
-                        sh './mvnw test' // Example test command; adjust as needed
+                        sh './mvnw test' // Adjust as needed for your test command
                     } else {
-
+                        echo "Skipping tests as ENABLE_TESTS is set to false"
+                    }
+                }
+            }
+        }
+    }
+}
